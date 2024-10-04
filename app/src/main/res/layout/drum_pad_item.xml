@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.AppCompatButton
+    android:id="@+id/drum_pad_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="20sp"
+    android:layout_margin="8dp"
+    android:background="@color/material_dynamic_primary80"
+    android:layout_gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

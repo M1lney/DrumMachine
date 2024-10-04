@@ -3,54 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/kickButton"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/drumMachineButton"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="Kick"
-        android:textSize="20sp"
-        android:layout_margin="8dp"
-        android:background="@android:color/darker_gray"
-        app:backgroundTint="@null"
-        app:layout_constraintHeight_percent="0.25"
-        app:layout_constraintWidth_percent="0.3"
+        android:layout_height="wrap_content"
+        android:text="Drum Machine"
+        android:textSize="24sp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/snareButton"/>
-
-    <Button
-        android:id="@+id/snareButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="Snare"
-        android:textSize="20sp"
-        android:layout_margin="8dp"
-        android:background="@android:color/darker_gray"
-        app:backgroundTint="@null"
-        app:layout_constraintHeight_percent="0.25"
-        app:layout_constraintWidth_percent="0.3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/kickButton"
-        app:layout_constraintEnd_toStartOf="@+id/hihatButton"/>
-
-    <Button
-        android:id="@+id/hihatButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="Hi-Hat"
-        android:textSize="20sp"
-        android:layout_margin="8dp"
-        android:background="@android:color/darker_gray"
-        app:backgroundTint="@null"
-        app:layout_constraintHeight_percent="0.25"
-        app:layout_constraintWidth_percent="0.3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/snareButton"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
