@@ -1,7 +1,11 @@
 package com.example.drummachine.adapters;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.SoundPool;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.drummachine.R;
 import com.example.drummachine.models.DrumPad;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 
 public class DrumPadAdapter extends RecyclerView.Adapter<DrumPadAdapter.DrumPadViewHolder> {
@@ -41,9 +48,39 @@ public class DrumPadAdapter extends RecyclerView.Adapter<DrumPadAdapter.DrumPadV
         holder.padButton.setText(drumPad.getLabel());
 
         // Load sound and handle click
-        holder.padButton.setOnClickListener(v -> {
-            soundPool.play(drumPad.getSoundId(), 1.0f, 1.0f, 1, 0, 1.0f);
-        });
+        // Check if the soundId is a resource ID or a path (for user-added sounds)
+        if (drumPad.getSoundPath() != null) {
+            // Load custom sound from path
+            holder.padButton.setOnClickListener(v -> playSoundFromPath(drumPad.getSoundPath()));
+        } else {
+            // Load sound from resources
+            holder.padButton.setOnClickListener(v -> soundPool.play(drumPad.getSoundId(), 1.0f, 1.0f, 1, 0, 1.0f));
+        }
+    }
+
+    private void playSoundFromPath(String soundPath) {
+        try {
+            // Get Uri from the file path
+            Uri soundUri = Uri.parse(soundPath);
+            ContentResolver contentResolver = context.getContentResolver();
+
+            // Get a ParcelFileDescriptor from the Uri
+            ParcelFileDescriptor pfd = contentResolver.openFileDescriptor(soundUri, "r");
+
+            if (pfd != null) {
+                AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, pfd.getStatSize());
+
+                // Load sound into SoundPool
+                int soundId = soundPool.load(afd, 1);
+                afd.close();
+
+                // Play the loaded sound
+                soundPool.play(soundId, 1.0f, 1.0f, 1, 0, 1.0f);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
