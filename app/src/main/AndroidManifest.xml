@@ -13,9 +13,12 @@
         android:theme="@style/Theme.DrumMachine"
         tools:targetApi="31">
         <activity
+            android:name=".DrumMachineActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
-            android:screenOrientation="landscape"
-            android:exported="true">
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
