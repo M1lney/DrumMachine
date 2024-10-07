@@ -30,30 +30,33 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintBottom_toTopOf="@id/add_drum_pad_button"
+        app:layout_constraintBottom_toTopOf="@id/button_container"
         app:layout_constraintVertical_bias="0.0" />
 
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/add_drum_pad_button"
+    <LinearLayout
+        android:id="@+id/button_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:contentDescription="Add New Drum Pad"
-        android:text="+"
-        />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/import_sound_files"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:contentDescription="Import sound files"
-        android:text="Import"
-        />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/add_drum_pad_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Add New Drum Pad"
+            android:text="+" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/import_sound_files"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Import sound files"
+            android:text="Import" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
