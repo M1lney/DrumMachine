@@ -38,10 +38,11 @@ public class DrumPadAdapter extends RecyclerView.Adapter<DrumPadAdapter.DrumPadV
     private Context context;
     private DrumPadController controller;
 
-    public DrumPadAdapter(DrumKit drumKit, SoundPool soundPool, Context context) {
+    public DrumPadAdapter(DrumKit drumKit, SoundPool soundPool, Context context, DrumPadController controller) {
         this.drumKit = drumKit;
         this.soundPool = soundPool;
         this.context = context;
+        this.controller = controller;
     }
 
     @NonNull
@@ -57,18 +58,16 @@ public class DrumPadAdapter extends RecyclerView.Adapter<DrumPadAdapter.DrumPadV
         DrumPad drumPad = drumKit.getDrumPads().get(position);
         holder.padButton.setText(drumPad.getLabel());
 
-        DrumPadController controller = new DrumPadController(soundPool);
-
         // Create a GestureDetector for handling tap and long press
         GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
-
-                if (((DrumMachineActivity) context).isSwapMode()) {
-
+                if (((DrumMachineActivity) context).isSwapMode() || drumPad.getSoundPath() == null) {
+                    int currentPosition = holder.getAdapterPosition();
+                    ((DrumMachineActivity) context).openInternalFilePicker(currentPosition);
+                } else {
+                    controller.playOrLoadSound(drumPad);
                 }
-                // Play the sound or swap it if not loaded
-                controller.playOrLoadSound(drumPad);
                 return true;
             }
 

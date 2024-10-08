@@ -7,7 +7,7 @@ import com.example.drummachine.models.DrumPad;
 
 public class DrumPadController {
 
-    private SoundPool soundPool;
+    private final SoundPool soundPool;
 
     public DrumPadController(SoundPool soundPool) {
         this.soundPool = soundPool;
