@@ -57,6 +57,13 @@
             android:contentDescription="Import sound files"
             android:text="Import" />
 
+        <androidx.appcompat.widget.AppCompatToggleButton
+            android:id="@+id/toggle_swap_mode_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOff="Play Mode"
+            android:textOn="Swap Mode"
+            android:checked="false" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

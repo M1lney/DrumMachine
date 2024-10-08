@@ -2,11 +2,17 @@ package com.example.drummachine.adapters;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.CursorLoader;
 import android.content.res.AssetFileDescriptor;
+import android.database.Cursor;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -14,7 +20,10 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.drummachine.DrumMachineActivity;
 import com.example.drummachine.R;
+import com.example.drummachine.controllers.DrumPadController;
+import com.example.drummachine.models.DrumKit;
 import com.example.drummachine.models.DrumPad;
 
 import java.io.File;
@@ -24,12 +33,13 @@ import java.util.List;
 
 public class DrumPadAdapter extends RecyclerView.Adapter<DrumPadAdapter.DrumPadViewHolder> {
 
-    private List<DrumPad> drumPadList;
+    private DrumKit drumKit;
     private SoundPool soundPool;
     private Context context;
+    private DrumPadController controller;
 
-    public DrumPadAdapter(List<DrumPad> drumPadList, SoundPool soundPool, Context context) {
-        this.drumPadList = drumPadList;
+    public DrumPadAdapter(DrumKit drumKit, SoundPool soundPool, Context context) {
+        this.drumKit = drumKit;
         this.soundPool = soundPool;
         this.context = context;
     }
@@ -44,58 +54,46 @@ public class DrumPadAdapter extends RecyclerView.Adapter<DrumPadAdapter.DrumPadV
 
     @Override
     public void onBindViewHolder(@NonNull DrumPadViewHolder holder, int position) {
-        DrumPad drumPad = drumPadList.get(position);
+        DrumPad drumPad = drumKit.getDrumPads().get(position);
         holder.padButton.setText(drumPad.getLabel());
 
-        // Load sound and handle click
-        // Check if the soundId is a resource ID or a path (for user-added sounds)
-        if (drumPad.getSoundPath() != null) {
-            // Load custom sound from path
-            holder.padButton.setOnClickListener(v -> playSoundFromPath(drumPad.getSoundPath()));
-        } else {
-            // Load sound from resources
-            holder.padButton.setOnClickListener(v -> soundPool.play(drumPad.getSoundId(), 1.0f, 1.0f, 1, 0, 1.0f));
-        }
-    }
+        DrumPadController controller = new DrumPadController(soundPool);
 
-    private void playSoundFromPath(String soundPath) {
-        try {
-            // Get Uri from the file path
-            Uri soundUri = Uri.parse(soundPath);
-            ContentResolver contentResolver = context.getContentResolver();
+        // Create a GestureDetector for handling tap and long press
+        GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
 
-            // Get a ParcelFileDescriptor from the Uri
-            ParcelFileDescriptor pfd = contentResolver.openFileDescriptor(soundUri, "r");
+                if (((DrumMachineActivity) context).isSwapMode()) {
 
-            if (pfd != null) {
-                AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, pfd.getStatSize());
-
-                // Load sound into SoundPool
-                int soundId = soundPool.load(afd, 1);
-                afd.close();
-
-                // Play the loaded sound
-                soundPool.play(soundId, 1.0f, 1.0f, 1, 0, 1.0f);
+                }
+                // Play the sound or swap it if not loaded
+                controller.playOrLoadSound(drumPad);
+                return true;
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onLongPress(MotionEvent e) {
+                // Loop the sound on long press
+                controller.loopSound(drumPad);
+            }
+        });
+
+        // Set touch listener to handle gestures
+        holder.padButton.setOnTouchListener((v, event) -> {
+            gestureDetector.onTouchEvent(event);
+            return true;
+        });
     }
+
+    public void updateDrumPad(int index, String path) {
+        controller.swapSound(index, path, drumKit);
+    }
+
 
     @Override
     public int getItemCount() {
-        return drumPadList.size();
-    }
-
-    public void addDrumPad(DrumPad drumPad) {
-        drumPadList.add(drumPad);
-        notifyItemInserted(drumPadList.size() - 1);
-    }
-
-    public void removeDrumPad(int position) {
-        drumPadList.remove(position);
-        notifyItemRemoved(position);
+        return drumKit.getDrumPads().size();
     }
 
     static class DrumPadViewHolder extends RecyclerView.ViewHolder {

@@ -7,35 +7,34 @@ import java.util.List;
 
 public class DrumKit {
     private List<DrumPad> drumPads;
+    private String kitName;  // To uniquely identify the kit
 
-    public DrumKit() {
+    public DrumKit(String kitName) {
+        this.kitName = kitName;
         drumPads = new ArrayList<>();
+        // Initialize with 8 empty drum pads
+        for (int i = 0; i < 8; i++) {
+            drumPads.add(new DrumPad("Pad " + (i + 1), null));  // No sound associated yet
+        }
     }
 
-    // Add a new DrumPad to the kit
-    public void addDrumPad(DrumPad drumPad) {
-        drumPads.add(drumPad);
+    // Add or update the sound for a specific drum pad
+    public void updateDrumPad(int index, String soundPath) {
+        if (index >= 0 && index < drumPads.size()) {
+            DrumPad pad = drumPads.get(index);
+            pad.setSoundPath(soundPath);
+        }
     }
 
-    // Retrieve the list of DrumPads
+    // Getters for drum pads and kit name
     public List<DrumPad> getDrumPads() {
         return drumPads;
     }
 
-    // Update the sound of a specific drum pad
-    public void updateDrumPad(int index, String newLabel, int newSoundId) {
-        if (index >= 0 && index < drumPads.size()) {
-            DrumPad pad = drumPads.get(index);
-            pad.setLabel(newLabel);
-            pad.setSoundId(newSoundId);
-        }
+    public String getKitName() {
+        return kitName;
     }
 
-    // Get a specific DrumPad by its index
-    public DrumPad getDrumPad(int index) {
-        if (index >= 0 && index < drumPads.size()) {
-            return drumPads.get(index);
-        }
-        return null;
-    }
+    // Save drum kit logic could be placed here (e.g., saving to internal storage)
 }
+

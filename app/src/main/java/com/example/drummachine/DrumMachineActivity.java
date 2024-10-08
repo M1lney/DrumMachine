@@ -17,6 +17,7 @@ import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.provider.OpenableColumns;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,11 +39,11 @@ public class DrumMachineActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SoundPool soundPool;
     private DrumPadAdapter adapter;
-    private List<DrumPad> drumPadList;
-    private int[] soundResources = {R.raw.kick, R.raw.snare, R.raw.hihatclosed};  // Example sound files
-    private DrumKit drumKit;
+    private DrumKit currentDrumKit;
 
     private ActivityResultLauncher<Intent> filePickerLauncher;
+
+    private boolean isSwapMode = false; // Track whether we are in swap mode
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,7 @@ public class DrumMachineActivity extends AppCompatActivity {
                 .build();
 
         soundPool = new SoundPool.Builder()
-                .setMaxStreams(3)
+                .setMaxStreams(8)
                 .setAudioAttributes(audioAttributes)
                 .build();
 
@@ -65,16 +66,19 @@ public class DrumMachineActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // 3 columns, adjust as needed
 
-        drumPadList = new ArrayList<>();
-        drumKit = new DrumKit(); // Initialize DrumKit to hold sounds
+        currentDrumKit = new DrumKit("Default Kit");
 
-        adapter = new DrumPadAdapter(drumPadList, soundPool, this);
+        adapter = new DrumPadAdapter(currentDrumKit, soundPool, this);
         recyclerView.setAdapter(adapter);
 
         findViewById(R.id.import_sound_files).setOnClickListener(v -> openFilePicker());
 
-        // Load existing sounds from internal storage into drum pads
-        loadDrumPadsFromInternalStorage();
+        ToggleButton toggleModeButton = findViewById(R.id.toggle_swap_mode_button);
+
+        toggleModeButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            isSwapMode = isChecked;  // If checked, we are in swap mode
+        });
+
     }
 
     private void setupFilePickerLauncher() {
@@ -128,11 +132,6 @@ public class DrumMachineActivity extends AppCompatActivity {
             // Notify the user or update the UI
             Toast.makeText(this, "File saved to internal storage: " + fileName, Toast.LENGTH_SHORT).show();
 
-            // Optionally, you can also add this sound to the drum pads
-            int soundId = soundPool.load(outputFile.getAbsolutePath(), 1);
-            DrumPad newPad = new DrumPad(fileName, soundId);
-            adapter.addDrumPad(newPad);
-
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to save file", Toast.LENGTH_SHORT).show();
@@ -169,17 +168,38 @@ public class DrumMachineActivity extends AppCompatActivity {
     }
 
 
-    private void loadDrumPadsFromInternalStorage() {
-        File[] files = getFilesDir().listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile() && file.getName().endsWith(".wav")) { // Filter for audio files
-                    int soundId = soundPool.load(file.getAbsolutePath(), 1);
-                    DrumPad newPad = new DrumPad(file.getName(), soundId);
-                    adapter.addDrumPad(newPad);
-                }
-            }
+    public void openInternalFilePicker(DrumPadAdapter adapter, int padPosition) {
+        File internalStorageDir = getFilesDir();
+        File[] files = internalStorageDir.listFiles();
+
+        if (files != null && files.length > 0) {
+            // Show the list of files in a dialog or custom UI for selection
+            showFileSelectionDialog(files, adapter, padPosition);
+        } else {
+            Toast.makeText(this, "No sounds available. Please import sounds first.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // Show files in a dialog for user to pick
+    private void showFileSelectionDialog(File[] files, DrumPadAdapter adapter, int padPosition) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select a Sound");
+
+        String[] fileNames = new String[files.length];
+        for (int i = 0; i < files.length; i++) {
+            fileNames[i] = files[i].getName();
+        }
+
+        builder.setItems(fileNames, (dialog, which) -> {
+            String selectedFilePath = files[which].getAbsolutePath();
+            adapter.updateDrumPad(padPosition, selectedFilePath);  // Directly update the drum pad in the adapter
+        });
+
+        builder.create().show();
+    }
+
+    public boolean isSwapMode() {
+        return isSwapMode;
     }
 
     @Override
