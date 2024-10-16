@@ -2,6 +2,10 @@ package com.example.drummachine.models;
 
 import com.example.drummachine.models.DrumPad;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +39,34 @@ public class DrumKit {
         return kitName;
     }
 
-    // Save drum kit logic could be placed here (e.g., saving to internal storage)
+    public String toJson() throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("name", kitName);
+
+        JSONArray jsonPads = new JSONArray();
+        for (DrumPad pad : drumPads) {
+            jsonPads.put(pad.toJson());
+        }
+        jsonObject.put("drumPads", jsonPads);
+
+        return jsonObject.toString();
+    }
+
+    // Deserialize from JSON
+    public static DrumKit fromJson(String jsonString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+        String name = jsonObject.getString("name");
+        DrumKit drumKit = new DrumKit(name);
+
+        JSONArray jsonPads = jsonObject.getJSONArray("drumPads");
+        drumKit.drumPads.clear();
+        for (int i = 0; i < jsonPads.length(); i++) {
+            DrumPad pad = DrumPad.fromJson(jsonPads.getJSONObject(i));
+            drumKit.drumPads.add(pad);
+        }
+
+        return drumKit;
+    }
+
 }
 

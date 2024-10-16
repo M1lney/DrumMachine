@@ -63,7 +63,7 @@ public class DrumPadAdapter extends RecyclerView.Adapter<DrumPadAdapter.DrumPadV
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
                 if (((DrumMachineActivity) context).isSwapMode() || drumPad.getSoundPath() == null) {
-                    int currentPosition = holder.getAdapterPosition();
+                    int currentPosition = holder.getBindingAdapterPosition();
                     ((DrumMachineActivity) context).openInternalFilePicker(currentPosition);
                 } else {
                     controller.playOrLoadSound(drumPad);

@@ -44,11 +44,27 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/add_drum_pad_button"
+            android:id="@+id/new_drum_kitButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="Add New Drum Pad"
+            android:contentDescription="Start new drum kit"
             android:text="+" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/load_drum_kitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:contentDescription="Load drum kit"
+            android:text="Load" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/save_drum_kitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:contentDescription="Save drum kit"
+            android:text="Save" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/import_sound_files"

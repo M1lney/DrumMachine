@@ -1,5 +1,7 @@
 package com.example.drummachine.controllers;
 
+import android.content.Context;
+import android.media.AudioAttributes;
 import android.media.SoundPool;
 
 import com.example.drummachine.models.DrumKit;
@@ -7,10 +9,28 @@ import com.example.drummachine.models.DrumPad;
 
 public class DrumPadController {
 
+    private static DrumPadController instance;
     private final SoundPool soundPool;
 
-    public DrumPadController(SoundPool soundPool) {
+    private DrumPadController(SoundPool soundPool) {
         this.soundPool = soundPool;
+    }
+
+    public static synchronized DrumPadController getInstance(Context context) {
+        if (instance == null) {
+            // Create a SoundPool instance
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+            SoundPool soundPool = new SoundPool.Builder()
+                    .setMaxStreams(8)
+                    .setAudioAttributes(audioAttributes)
+                    .build();
+
+            instance = new DrumPadController(soundPool);
+        }
+        return instance;
     }
 
     // Method to play or load sound
@@ -51,5 +71,13 @@ public class DrumPadController {
         drumKit.updateDrumPad(index, soundPath);
 
         loadSound(drumPad);
+    }
+
+    public void reloadSounds(DrumKit drumKit) {
+        for (DrumPad drumPad : drumKit.getDrumPads()) {
+            if (drumPad.getSoundPath() != null && !drumPad.getSoundPath().isEmpty()) {
+                loadSound(drumPad); // Load sound and set soundId
+            }
+        }
     }
 }
