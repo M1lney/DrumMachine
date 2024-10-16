@@ -35,7 +35,7 @@ public class DrumMachineActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private DrumPadAdapter adapter;
     private DrumKit currentDrumKit;
-
+    private DrumPadController controller;
     private ActivityResultLauncher<Intent> filePickerLauncher;
     private FileManager fileManager;
 
@@ -45,8 +45,11 @@ public class DrumMachineActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drum_machine);
+        DrumPadController.resetInstance();
 
         fileManager = new FileManager(this);
+        controller = DrumPadController.getInstance(this);
+
 
         setupFilePickerLauncher();
 
@@ -54,6 +57,8 @@ public class DrumMachineActivity extends AppCompatActivity {
         if (drumKitJson != null) {
             try {
                 currentDrumKit = DrumKit.fromJson(drumKitJson);
+                DrumPadController.getInstance(this).reloadSounds(currentDrumKit);
+
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
@@ -78,8 +83,6 @@ public class DrumMachineActivity extends AppCompatActivity {
     private void initializeRecyclerView() {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // 3 columns
-        currentDrumKit = new DrumKit("Default Kit");
-        DrumPadController controller = DrumPadController.getInstance(this);
 
         adapter = new DrumPadAdapter(currentDrumKit, this, controller);
         recyclerView.setAdapter(adapter);
@@ -143,8 +146,7 @@ public class DrumMachineActivity extends AppCompatActivity {
     }
 
     private void startNewDrumKit() {
-        // Release the SoundPool resources
-        DrumPadController.getInstance(this).releaseSoundPool();
+
 
         // Start a new DrumMachineActivity
         Intent intent = new Intent(this, DrumMachineActivity.class);
@@ -208,12 +210,18 @@ public class DrumMachineActivity extends AppCompatActivity {
     }
 
     public void loadDrumKit(String filename) throws JSONException {
+        // Load the drum kit from internal storage
         DrumKit loadedDrumKit = fileManager.loadDrumKitFromInternalStorage(filename);
         if (loadedDrumKit != null) {
+            DrumPadController.getInstance(this).releaseSoundPool();
+
+            // Create an Intent to start a new DrumMachineActivity
             Intent intent = new Intent(this, DrumMachineActivity.class);
             intent.putExtra("DRUM_KIT", loadedDrumKit.toJson()); // Pass the loaded drum kit data
-            startActivity(intent);
-            finish(); // Optionally finish the current activity
+            startActivity(intent); // Start the new activity
+            finish(); // Finish the current activity to prevent going back to it
+        } else {
+            Toast.makeText(this, "Failed to load the drum kit.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -224,7 +232,6 @@ public class DrumMachineActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DrumPadController.getInstance(this).releaseSoundPool();
     }
 }
 

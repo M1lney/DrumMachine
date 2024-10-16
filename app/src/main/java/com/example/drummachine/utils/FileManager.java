@@ -8,6 +8,7 @@ import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.drummachine.controllers.DrumPadController;
 import com.example.drummachine.models.DrumKit;
 import com.example.drummachine.models.DrumPad;
 
@@ -107,13 +108,7 @@ public class FileManager {
             String json = jsonBuilder.toString();
             Log.d("FileManager", "Loaded drum kit JSON from " + filename + ": " + json); // Log the loaded JSON
 
-            DrumKit drumKit = DrumKit.fromJson(json);
-            Log.d("FileManager", "Loaded drum kit: " + drumKit.getKitName());
-            for (int i = 0; i < drumKit.getDrumPads().size(); i++) {
-                DrumPad pad = drumKit.getDrumPads().get(i);
-                Log.d("FileManager", "DrumPad " + i + ": label=" + pad.getLabel() + ", soundPath=" + pad.getSoundPath());
-            }
-            return drumKit;
+            return DrumKit.fromJson(json);
         } catch (IOException | JSONException e) {
             e.printStackTrace();
             Toast.makeText(context, "Failed to load drum kit", Toast.LENGTH_SHORT).show();

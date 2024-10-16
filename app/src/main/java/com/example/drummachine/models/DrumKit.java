@@ -1,5 +1,7 @@
 package com.example.drummachine.models;
 
+import android.util.Log;
+
 import com.example.drummachine.controllers.DrumPadController;
 import com.example.drummachine.models.DrumPad;
 
@@ -11,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DrumKit {
+    private static final String TAG = "DrumKit"; // Tag for logging
+
     private List<DrumPad> drumPads;
     private String kitName;  // To uniquely identify the kit
 
@@ -21,6 +25,8 @@ public class DrumKit {
         for (int i = 0; i < 8; i++) {
             drumPads.add(new DrumPad("Pad " + (i + 1), null));  // No sound associated yet
         }
+        Log.d(TAG, "Created DrumKit: " + kitName + " with " + drumPads.size() + " empty pads.");
+
     }
 
     // Add or update the sound for a specific drum pad
@@ -49,8 +55,9 @@ public class DrumKit {
             jsonPads.put(pad.toJson());
         }
         jsonObject.put("drumPads", jsonPads);
-
-        return jsonObject.toString();
+        String jsonString = jsonObject.toString();
+        Log.d(TAG, "Serialized DrumKit to JSON: " + jsonString); // Log the JSON string
+        return jsonString;
     }
 
     // Deserialize from JSON
@@ -63,8 +70,13 @@ public class DrumKit {
         drumKit.drumPads.clear();
         for (int i = 0; i < jsonPads.length(); i++) {
             DrumPad pad = DrumPad.fromJson(jsonPads.getJSONObject(i));
+
             drumKit.drumPads.add(pad);
+            Log.d(TAG, "Deserialized Pad: " + pad.getLabel() + " with sound: " + pad.getSoundPath());
+
         }
+        Log.d(TAG, "Deserialized DrumKit from JSON: " + drumKit.toJson());
+
         return drumKit;
     }
 

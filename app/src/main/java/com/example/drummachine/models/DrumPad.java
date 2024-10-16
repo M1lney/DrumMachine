@@ -41,7 +41,6 @@ public class DrumPad {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("label", label);
         jsonObject.put("soundPath", soundPath != null ? soundPath : JSONObject.NULL);
-        Log.d("DrumPad", "Saving DrumPad: label=" + label + ", soundPath=" + soundPath); // Log soundPath being saved
 
         return jsonObject;
     }
@@ -49,7 +48,6 @@ public class DrumPad {
     public static DrumPad fromJson(JSONObject jsonObject) throws JSONException {
         String label = jsonObject.getString("label");
         String soundPath = jsonObject.isNull("soundPath") ? null : jsonObject.getString("soundPath");
-        Log.d("DrumPad", "Loading DrumPad: label=" + label + ", soundPath=" + soundPath); // Log soundPath being loaded
 
         return new DrumPad(label, soundPath);
     }
