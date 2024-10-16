@@ -10,7 +10,7 @@ import com.example.drummachine.models.DrumPad;
 public class DrumPadController {
 
     private static DrumPadController instance;
-    private final SoundPool soundPool;
+    private SoundPool soundPool;
 
     private DrumPadController(SoundPool soundPool) {
         this.soundPool = soundPool;
@@ -18,7 +18,6 @@ public class DrumPadController {
 
     public static synchronized DrumPadController getInstance(Context context) {
         if (instance == null) {
-            // Create a SoundPool instance
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -71,6 +70,13 @@ public class DrumPadController {
         drumKit.updateDrumPad(index, soundPath);
 
         loadSound(drumPad);
+    }
+
+    public void releaseSoundPool() {
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null; // Set to null to indicate it's released
+        }
     }
 
     public void reloadSounds(DrumKit drumKit) {

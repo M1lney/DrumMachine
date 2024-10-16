@@ -33,7 +33,6 @@ import java.io.File;
 public class DrumMachineActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private SoundPool soundPool;
     private DrumPadAdapter adapter;
     private DrumKit currentDrumKit;
 
@@ -62,8 +61,6 @@ public class DrumMachineActivity extends AppCompatActivity {
             currentDrumKit = new DrumKit("Default Kit");
         }
 
-        // Initialize SoundPool and RecyclerView
-        initializeSoundPool();
         initializeRecyclerView();
 
         findViewById(R.id.import_sound_files).setOnClickListener(v -> openFilePicker());
@@ -77,24 +74,14 @@ public class DrumMachineActivity extends AppCompatActivity {
         toggleModeButton.setOnCheckedChangeListener((buttonView, isChecked) -> isSwapMode = isChecked);
     }
 
-    private void initializeSoundPool() {
-        AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build();
-        soundPool = new SoundPool.Builder()
-                .setMaxStreams(8)
-                .setAudioAttributes(audioAttributes)
-                .build();
-    }
 
     private void initializeRecyclerView() {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3)); // 3 columns
         currentDrumKit = new DrumKit("Default Kit");
-        DrumPadController controller = new DrumPadController(soundPool);
+        DrumPadController controller = DrumPadController.getInstance(this);
 
-        adapter = new DrumPadAdapter(currentDrumKit, soundPool, this, controller);
+        adapter = new DrumPadAdapter(currentDrumKit, this, controller);
         recyclerView.setAdapter(adapter);
     }
 
@@ -157,9 +144,7 @@ public class DrumMachineActivity extends AppCompatActivity {
 
     private void startNewDrumKit() {
         // Release the SoundPool resources
-        if (soundPool != null) {
-            soundPool.release();
-        }
+        DrumPadController.getInstance(this).releaseSoundPool();
 
         // Start a new DrumMachineActivity
         Intent intent = new Intent(this, DrumMachineActivity.class);
@@ -239,7 +224,7 @@ public class DrumMachineActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        soundPool.release();
+        DrumPadController.getInstance(this).releaseSoundPool();
     }
 }
 

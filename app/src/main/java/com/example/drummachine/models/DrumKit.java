@@ -1,5 +1,6 @@
 package com.example.drummachine.models;
 
+import com.example.drummachine.controllers.DrumPadController;
 import com.example.drummachine.models.DrumPad;
 
 import org.json.JSONArray;
@@ -64,7 +65,6 @@ public class DrumKit {
             DrumPad pad = DrumPad.fromJson(jsonPads.getJSONObject(i));
             drumKit.drumPads.add(pad);
         }
-
         return drumKit;
     }
 

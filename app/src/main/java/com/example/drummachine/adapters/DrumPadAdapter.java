@@ -34,13 +34,11 @@ import java.util.List;
 public class DrumPadAdapter extends RecyclerView.Adapter<DrumPadAdapter.DrumPadViewHolder> {
 
     private DrumKit drumKit;
-    private SoundPool soundPool;
     private Context context;
     private DrumPadController controller;
 
-    public DrumPadAdapter(DrumKit drumKit, SoundPool soundPool, Context context, DrumPadController controller) {
+    public DrumPadAdapter(DrumKit drumKit, Context context, DrumPadController controller) {
         this.drumKit = drumKit;
-        this.soundPool = soundPool;
         this.context = context;
         this.controller = controller;
     }
